@@ -1,29 +1,30 @@
 package org.example.config;
 
-import org.example.SystemProfile;
-import org.example.controller.DevProfile;
+import org.example.profile.SystemProfile;
+import org.example.profile.DevProfile;
 import org.example.profile.ProductionProfile;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
-@ComponentScan("org.example.controller")
 public class JavaConfig {
 
     @Bean
-    @Profile("dev")
+    //@ConditionalOnProperty(name = "netology.profile.dev", havingValue = "true")
     public SystemProfile devProfile() {
         return new DevProfile();
     }
 
     @Bean
-    @Profile("prod")
+    //@ConditionalOnProperty(name = "netology.profile.dev", havingValue = "false")
     public SystemProfile prodProfile() {
         return new ProductionProfile();
     }
 
+    @Bean
+    public SystemProfile systemProfile(@Value("${netology.profile.dev}") boolean isDev) {
+        return isDev ? devProfile() : prodProfile();
+    }
 }
